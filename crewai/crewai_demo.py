@@ -47,7 +47,7 @@ def search_flight_prices(destination: str, departure_city: str = "New York") -> 
     Search for real flight prices and options to a destination.
     Uses web search to find current flight information from major booking sites.
     """
-    search_query = f"flights from {departure_city} to {destination} prices 2025 best options"
+    search_query = f"flights from {departure_city} to {destination} prices 2026 best options"
 
     # In production, this would use a real flight API (Skyscanner, Kayak, etc.)
     # For now, the LLM will use this to inform its research
@@ -411,17 +411,27 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
         print("✅ Crew Execution Completed Successfully!")
         print("=" * 80)
         print()
-        print("FINAL TRAVEL PLAN REPORT (Based on Real API Data):")
+        print(f"FINAL TRAVEL PLAN REPORT FOR {destination.upper()} (Based on Real API Data):")
         print("-" * 80)
         print(result)
         print("-" * 80)
 
         # Save output to file
-        with open("/Users/pranavhharish/Desktop/IS-492/multi-agent/crewAI/crewai_output.txt", "w") as f:
+        output_filename = f"crewai_output_{destination.lower()}.txt"
+        output_path = Path(__file__).parent / output_filename
+
+        with open(output_path, "w") as f:
             f.write("=" * 80 + "\n")
             f.write("CrewAI Multi-Agent Travel Planning System - Real API Execution Report\n")
-            f.write("Planning a 5-Day Trip to Iceland\n")
+            f.write(f"Planning a {trip_duration} Trip to {destination}\n")
             f.write("=" * 80 + "\n\n")
+            f.write(f"Trip Details:\n")
+            f.write(f"  Destination: {destination}\n")
+            f.write(f"  Duration: {trip_duration}\n")
+            f.write(f"  Dates: {trip_dates}\n")
+            f.write(f"  Departure: {departure_city}\n")
+            f.write(f"  Travelers: {travelers}\n")
+            f.write(f"  Budget Preference: {budget_preference}\n\n")
             f.write(f"Execution Time: {datetime.now()}\n")
             f.write(f"API Version: REAL API CALLS (OpenAI GPT-4)\n")
             f.write(f"Data Source: Web research via OpenAI\n\n")
@@ -435,7 +445,7 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
             f.write(str(result))
             f.write("\n" + "-" * 80 + "\n")
 
-        print("\n✅ Output saved to crewai_output.txt")
+        print(f"\n✅ Output saved to {output_filename}")
         print("ℹ️  Note: All data in this report is based on REAL API calls to OpenAI")
         print("    and research of current travel information sources.")
 
@@ -452,4 +462,32 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
 
 
 if __name__ == "__main__":
-    main()
+    # Allow command line arguments to override defaults
+    import sys
+
+    kwargs = {
+        "destination": "Iceland",
+        "trip_duration": "5 days",
+        "trip_dates": "January 15-20, 2026",
+        "departure_city": "New York",
+        "travelers": 2,
+        "budget_preference": "mid-range"
+    }
+
+    # Parse command line arguments (optional)
+    # Usage: python crewai_demo.py [destination] [duration] [departure_city]
+    # Example: python crewai_demo.py "France" "7 days" "Los Angeles"
+    if len(sys.argv) > 1:
+        kwargs["destination"] = sys.argv[1]
+    if len(sys.argv) > 2:
+        kwargs["trip_duration"] = sys.argv[2]
+    if len(sys.argv) > 3:
+        kwargs["departure_city"] = sys.argv[3]
+    if len(sys.argv) > 4:
+        kwargs["trip_dates"] = sys.argv[4]
+    if len(sys.argv) > 5:
+        kwargs["travelers"] = int(sys.argv[5])
+    if len(sys.argv) > 6:
+        kwargs["budget_preference"] = sys.argv[6]
+
+    main(**kwargs)

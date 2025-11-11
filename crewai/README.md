@@ -1,5 +1,8 @@
 # CrewAI Multi-Agent System - Complete Manual
 
+> 🎯 **This system is fully flexible!** Plan trips to ANY destination using command-line arguments.
+> Just run: `python crewai_demo.py "France" "7 days" "Los Angeles"`
+
 ## What is CrewAI?
 
 **CrewAI** is a framework for building and orchestrating multi-agent AI systems. It enables multiple specialized AI agents to work together to solve complex tasks by:
@@ -22,27 +25,29 @@
 
 ## What Are We Doing?
 
-We've built a **CrewAI-based Travel Planning System** that demonstrates a real-world multi-agent workflow. This system plans a complete 5-day trip to Iceland by coordinating four specialized agents:
+We've built a **CrewAI-based Travel Planning System** that demonstrates a real-world multi-agent workflow. This system plans complete trips to ANY destination by coordinating four specialized agents.
+
+The system is **fully flexible** - you can plan trips to any destination, for any duration, with any budget preference.
 
 ### The Team
 
 | Agent | Expertise | Responsibility |
 |-------|-----------|-----------------|
-| **FlightAgent** | ✈️ Flight Specialist | Research and recommend flight options |
-| **HotelAgent** | 🏨 Accommodation Specialist | Find and recommend suitable hotels |
-| **ItineraryAgent** | 📅 Travel Planner | Create a detailed 5-day itinerary |
-| **BudgetAgent** | 💰 Financial Advisor | Calculate costs and identify savings |
+| **FlightAgent** | ✈️ Flight Specialist | Research and recommend flight options for any destination |
+| **HotelAgent** | 🏨 Accommodation Specialist | Find and recommend suitable hotels for any location |
+| **ItineraryAgent** | 📅 Travel Planner | Create detailed itineraries for any destination |
+| **BudgetAgent** | 💰 Financial Advisor | Calculate costs and identify savings for any trip |
 
 ### Workflow Overview
 
 ```
-START
+START: Choose any destination
   ↓
-FlightAgent Task: Research flights to Iceland
+FlightAgent Task: Research flights to [destination]
   ↓ (generates flight options)
-HotelAgent Task: Find hotels in Reykjavik
+HotelAgent Task: Find hotels in [destination]
   ↓ (generates hotel recommendations)
-ItineraryAgent Task: Plan 5-day itinerary
+ItineraryAgent Task: Plan itinerary for [destination]
   ↓ (generates day-by-day activities)
 BudgetAgent Task: Calculate total costs
   ↓ (generates budget breakdown)
@@ -53,9 +58,9 @@ END: Comprehensive Travel Plan Report
 
 When you run this system, you get:
 
-1. **Flight Options** (3 alternatives with pricing and duration)
-2. **Hotel Recommendations** (4 options with ratings and amenities)
-3. **Detailed 5-Day Itinerary** (day-by-day activities and attractions)
+1. **Flight Options** (2-3 alternatives with pricing and duration)
+2. **Hotel Recommendations** (3-4 options with ratings and amenities)
+3. **Detailed Itinerary** (day-by-day activities tailored to destination)
 4. **Budget Analysis** (cost breakdown and savings tips)
 
 ---
@@ -126,29 +131,37 @@ The crew automatically:
 
 ```
 crewai/
-├── crewai_demo.py              # Main implementation (255 lines)
-│   ├── Tools section (lines 14-78)
-│   │   ├── search_flights()
-│   │   ├── search_hotels()
-│   │   └── get_iceland_attractions()
-│   ├── Agent definitions (lines 82-123)
-│   │   ├── FlightAgent
-│   │   ├── HotelAgent
-│   │   ├── ItineraryAgent
-│   │   └── BudgetAgent
-│   ├── Task definitions (lines 127-179)
-│   │   ├── flight_task
-│   │   ├── hotel_task
-│   │   ├── itinerary_task
-│   │   └── budget_task
-│   └── Crew orchestration (lines 183-255)
-│       ├── Agent instantiation
-│       ├── Task creation
-│       ├── Crew formation
-│       └── Execution & output
+├── crewai_demo.py              # Main implementation (now fully flexible)
+│   ├── Tools section
+│   │   ├── search_flight_prices()
+│   │   ├── search_hotel_options()
+│   │   ├── search_attractions_activities()
+│   │   └── search_travel_costs()
+│   ├── Agent definitions (parameterized)
+│   │   ├── create_flight_agent(destination, trip_dates)
+│   │   ├── create_hotel_agent(destination, trip_dates)
+│   │   ├── create_itinerary_agent(destination, trip_duration)
+│   │   └── create_budget_agent(destination)
+│   ├── Task definitions (parameterized)
+│   │   ├── create_flight_task(...)
+│   │   ├── create_hotel_task(...)
+│   │   ├── create_itinerary_task(...)
+│   │   └── create_budget_task(...)
+│   └── Main function with CLI support
+│       ├── Accepts destination as parameter
+│       ├── Supports command-line arguments
+│       └── Generates destination-specific output files
 ├── requirements.txt             # Python dependencies
 └── README.md                    # This file
 ```
+
+### Key Feature: Full Flexibility
+
+The system now works with ANY destination:
+- **Agents** dynamically adapt to the destination
+- **Tasks** personalize to specific locations
+- **Output files** are named after the destination
+- **Command-line arguments** allow easy parameter changes
 
 ---
 
@@ -166,14 +179,40 @@ export OPENAI_API_KEY="sk-proj-xxxxx"  # Replace with your actual key
 ```
 
 ### Step 3: Run the Demo
+
+**Plan a trip to Iceland (default):**
 ```bash
 python crewai_demo.py
 ```
 
+**Plan a trip to any destination:**
+```bash
+# France - 7 days from Los Angeles
+python crewai_demo.py "France" "7 days" "Los Angeles"
+
+# Japan - 10 days from San Francisco
+python crewai_demo.py "Japan" "10 days" "San Francisco"
+
+# Spain - 5 days from Boston
+python crewai_demo.py "Spain" "5 days" "Boston"
+
+# Thailand - 8 days from New York with custom dates
+python crewai_demo.py "Thailand" "8 days" "New York" "February 15-22, 2026"
+```
+
 ### Step 4: Review the Output
 ```bash
-cat crewai_output.txt
+# Default Iceland output
+cat crewai_output_iceland.txt
+
+# France output
+cat crewai_output_france.txt
+
+# Japan output
+cat crewai_output_japan.txt
 ```
+
+The system automatically generates output files with names like `crewai_output_[destination].txt`
 
 ---
 
@@ -345,36 +384,75 @@ Savings Tips:
 
 ## Customization Examples
 
-### Change Destination
-Modify the input parameters:
+### Change Destination (Command Line)
+
+The system now accepts command-line arguments! Plan trips anywhere:
+
+```bash
+# Default: Iceland trip from New York
+python crewai_demo.py
+
+# France trip from Los Angeles
+python crewai_demo.py "France" "7 days" "Los Angeles"
+
+# Japan trip from San Francisco
+python crewai_demo.py "Japan" "10 days" "San Francisco"
+
+# Spain trip from Boston
+python crewai_demo.py "Spain" "5 days" "Boston" "March 1-5, 2026"
+```
+
+### Programmatic Usage
+
+You can also call the function directly with parameters:
+
 ```python
-inputs={
-    "trip_destination": "Paris",
-    "trip_duration": "7 days",
-    "trip_dates": "February 1-7, 2025"
-}
+from crewai_demo import main
+
+# Plan a trip to France
+main(
+    destination="France",
+    trip_duration="7 days",
+    trip_dates="March 15-21, 2026",
+    departure_city="Los Angeles",
+    travelers=2,
+    budget_preference="luxury"
+)
+
+# Plan a trip to Japan
+main(
+    destination="Japan",
+    trip_duration="10 days",
+    trip_dates="April 1-10, 2026",
+    departure_city="San Francisco",
+    travelers=4,
+    budget_preference="mid-range"
+)
 ```
 
 ### Add a New Agent
-Create a WeatherAgent:
+
+Create a WeatherAgent (example):
 ```python
 weather_agent = Agent(
     role="Weather Advisor",
-    goal="Provide weather information and recommendations",
-    backstory="Expert meteorologist with Iceland expertise",
+    goal=f"Provide weather information and recommendations for {destination}",
+    backstory="Expert meteorologist with global expertise",
     tools=[get_weather_forecast()],
     verbose=True
 )
 ```
 
 ### Integrate Real APIs
-Replace mock tools with real implementations:
+
+Replace tools with real API implementations:
 ```python
 def search_flights(destination, dates):
     return skyscanner_api.search(destination, dates)
 ```
 
 ### Change Execution Style
+
 Use parallel execution for independent tasks:
 ```python
 crew = Crew(
