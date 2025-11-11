@@ -9,37 +9,17 @@ Agents:
 2. AnalysisAgent: Product analyst identifying market gaps and opportunities
 3. BlueprintAgent: Product designer creating features and user flows
 4. ReviewerAgent: Product reviewer suggesting improvements and next steps
+
+Configuration:
+- Uses shared configuration from parent directory (.env and shared_config.py)
+- No local .env file needed - uses parent directory configuration
 """
 
 import os
-import json
 from datetime import datetime
 from typing import Dict, List, Any
 import autogen
-
-# ============================================================================
-# CONFIGURATION SETUP
-# ============================================================================
-
-class AutoGenConfig:
-    """Configuration for AutoGen workflow"""
-
-    def __init__(self):
-        # API Configuration
-        self.api_key = os.getenv("OPENAI_API_KEY", "sk-test")
-        self.api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
-        self.model = "gpt-4-turbo-preview"
-
-    def get_config_list(self) -> List[Dict[str, Any]]:
-        """Get configuration list for LLM"""
-        return [
-            {
-                "model": self.model,
-                "api_key": self.api_key,
-                "api_base": self.api_base,
-                "api_type": "openai",
-            }
-        ]
+from config import Config
 
 
 # ============================================================================
@@ -345,8 +325,9 @@ class InterviewPlatformWorkflow:
 class OutputManager:
     """Manages and saves workflow outputs"""
 
-    def __init__(self, output_dir: str = "/Users/pranavhharish/Desktop/IS-492/multi-agent/autogen"):
-        self.output_dir = output_dir
+    def __init__(self, output_dir: str = None):
+        # Use Config.OUTPUT_DIR if not provided
+        self.output_dir = output_dir or Config.OUTPUT_DIR
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     def save_outputs(self, outputs: Dict[str, str]) -> str:
@@ -416,9 +397,17 @@ def main():
     """Main execution function"""
 
     try:
-        # Initialize configuration
-        config = AutoGenConfig()
-        config_list = config.get_config_list()
+        # Validate configuration
+        print("Validating configuration...")
+        if not Config.validate_setup():
+            print("\n✗ Configuration validation failed")
+            print("Please ensure OPENAI_API_KEY is set in the parent directory .env file")
+            return False
+
+        print(Config.get_summary())
+
+        # Get configuration list
+        config_list = Config.get_config_list()
 
         # Create agents
         print("Initializing agents...")
@@ -453,10 +442,14 @@ def main():
         print(f"Full outputs saved to: {output_file}")
         print(f"Summary saved to: {summary_file}")
         print(f"End Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        return True
 
     except Exception as e:
         print(f"\nError during workflow execution: {str(e)}")
-        print("Please ensure OPENAI_API_KEY is set and pyautogen is installed.")
+        print("Please ensure:")
+        print("  1. OPENAI_API_KEY is set in ../.env")
+        print("  2. pyautogen is installed: pip install -r requirements.txt")
+        print("  3. Parent directory .env file exists and is properly configured")
         raise
 
 

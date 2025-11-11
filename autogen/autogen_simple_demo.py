@@ -202,9 +202,10 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ Error during workflow execution: {str(e)}")
         print("\nTroubleshooting:")
-        print("1. Verify OPENAI_API_KEY is set in .env")
+        print("1. Verify OPENAI_API_KEY is set in parent directory .env (../.env)")
         print("2. Check your API key has sufficient credits")
         print("3. Verify internet connection")
-        print("4. Check OpenAI API status at https://status.openai.com")
+        print("4. Ensure config.py can access shared_config from parent directory")
+        print("5. Check OpenAI API status at https://status.openai.com")
         import traceback
         traceback.print_exc()

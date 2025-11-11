@@ -53,17 +53,17 @@ class Config(SharedConfig):
         Returns:
             List[Dict[str, Any]]: Configuration list compatible with AutoGen
         """
-        return [
-            {
-                "model": cls.OPENAI_MODEL,
-                "api_key": cls.OPENAI_API_KEY,
-                "api_base": cls.OPENAI_API_BASE,
-                "api_type": "openai",
-                "request_timeout": cls.AGENT_TIMEOUT,
-                "temperature": cls.AGENT_TEMPERATURE,
-                "max_tokens": cls.AGENT_MAX_TOKENS,
-            }
-        ]
+        config = {
+            "model": cls.OPENAI_MODEL,
+            "api_key": cls.OPENAI_API_KEY,
+            "api_type": "openai",
+        }
+
+        # Only include api_base if it's not the default
+        if cls.OPENAI_API_BASE != "https://api.openai.com/v1":
+            config["api_base"] = cls.OPENAI_API_BASE
+
+        return [config]
 
     @classmethod
     def validate_setup(cls) -> bool:
